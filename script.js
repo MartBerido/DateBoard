@@ -1,19 +1,24 @@
-const dayElement = document.getElementById("day");
 const dateElement = document.getElementById("date");
+const dayElement = document.getElementById("day");
 const hoursElement = document.getElementById("hours");
 const secondsElement = document.getElementById("seconds");
 const minutesElement = document.getElementById("minutes");
 const toggleBtn = document.getElementById("toggle-btn");
 const sessionElement = document.getElementById("session");
 const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+let is24HourFormat = false;
 
 function currentDateandTime() {
     const date = new Date();
     let hours = date.getHours();
     let session = "AM";
-    if (hours > 12) {
+    if (hours >= 12) {
       hours -= 12;
       session = "PM";
+    }
+    if (is24HourFormat) {
+        hours = date.getHours();
+        session = "";
     }
     const day = days[date.getDay()];
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -31,32 +36,28 @@ function currentDateandTime() {
   }
 
 function toggleFormat() {
-    const format = sessionElement.innerHTML;
     let hours = parseInt(hoursElement.innerHTML);
 
-    if (format === "PM" && hours < 12) {
-      hours += 12;
-    } else if (format === "AM" && hours === 12) {
-      hours = 0;
-    }
-
     if (is24HourFormat) {
-      let session = hours >= 12 ? "PM" : "AM";
-      hours = hours > 12 ? hours - 12 : hours;
-      hours = hours === 0 ? 12 : hours;
-      sessionElement.innerHTML = session;
       is24HourFormat = false;
     } else {
-      let session = hours >= 12 ? "PM" : "AM";
-      hours = hours < 10 ? "0" + hours : hours;
-      hours = hours === 0 ? 12 : hours;
-      sessionElement.innerHTML = session;
       is24HourFormat = true;
     }
 
-    hours = hours < 10 ? "0" + hours : hours;
+    if (is24HourFormat) {
+        toggleBtn.innerHTML = "12-hr / 24-hr";
+        let session = "";
+        hours = hours < 10 ? "0" + hours : hours;
+    } else {
+        toggleBtn.innerHTML = "12-hr / 24-hr";
+        let session = hours >= 12 ? "PM" : "AM";
+        hours = hours > 12 ? hours - 12 : hours;
+        hours = hours === 0 ? 12 : hours;
+        hours = hours < 10 ? "0" + hours : hours;
+        sessionElement.innerHTML = session;
+    }
+
     hoursElement.innerHTML = hours;
   }
   toggleBtn.addEventListener("click", toggleFormat);
   setInterval(currentDateandTime, 1000);
-
